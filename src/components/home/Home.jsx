@@ -6,9 +6,15 @@ export default function Home() {
   const [latestTopics, setLatestTopics] = useState([]);
 
     useEffect(() => {
-        request('/topics?order=created_at.desc&limit=3')
+        const abortController = new AbortController();
+
+        request('/topics?order=created_at.desc&limit=3', 'GET', null, { signal: abortController.signal })
             .then(setLatestTopics)
             .catch(error => alert(error));
+        
+        return () => {
+          abortController.abort();
+        }    
     }, []);
 
     return (

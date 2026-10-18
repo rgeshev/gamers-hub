@@ -4,7 +4,8 @@ const apiKey = "sb_publishable_hkpf60MzQP3eB3cVSgexmA_zCKQ16sw"
 export default async function request(path = "/", method = 'GET', data = null) {
     const options = {
         headers: {
-            apiKey,
+            apikey: apiKey,
+            Authorization: `Bearer ${apiKey}`,
         }
     };
 
@@ -22,5 +23,6 @@ export default async function request(path = "/", method = 'GET', data = null) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 }

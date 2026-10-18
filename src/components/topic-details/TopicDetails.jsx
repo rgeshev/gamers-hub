@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import request from '../../utils/request';
 import { formatDate } from '../../utils/formatDate';
 
 export default function TopicDetails() {
     const { topicId } = useParams();
+    const navigate = useNavigate();
     const [game, setGame] = useState({});
 
     useEffect(() => {
@@ -13,7 +14,13 @@ export default function TopicDetails() {
             setGame(topics[0] ?? {})
         })
         .catch(error => alert(error))
-    }, [topicId])
+    }, [topicId]);
+
+    const deleteGameHandler = () => {
+        request(`/topics?id=eq.${topicId}`, 'DELETE')
+            .then(() => navigate('/catalog'))
+            .catch(error => alert(error));
+    };
 
     return (
         <main className="container">
@@ -42,7 +49,7 @@ export default function TopicDetails() {
                         </button>
                         {/* Edit / Delete: visible to the AUTHOR only */}
                         <a className="btn" href="edit.html">Edit</a>
-                        <button className="btn btn-danger">Delete</button>
+                        <button className="btn btn-danger" type="button" onClick={deleteGameHandler}>Delete</button>
                     </div>
                 </article>
 

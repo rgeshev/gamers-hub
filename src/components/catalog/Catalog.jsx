@@ -1,4 +1,16 @@
+import { useEffect, useState } from "react";
+import request from "../../utils/request";
+import TopicCard from "../topic-card/TopicCard";
+
 export default function Catalog() {
+    const [topics, setTopics] = useState([]);
+
+    useEffect(() => {
+        request("/topics?order=created_at.desc")
+            .then(setTopics)
+            .catch(err => alert(err))
+    }, []);
+
     return (
         <main className="container">
             <section className="page" id="catalog-page">
@@ -52,57 +64,18 @@ export default function Catalog() {
                 </div>
 
                 {/* component: TopicList -> TopicCard (repeat per topic) */}
-                <div className="topic-list">
-                    <a className="topic-card pc" href="details.html">
-                        <div className="tags">
-                            <span className="tag platform">PC</span>
-                            <span className="tag">Help & Tips</span>
+                {topics.length > 0
+                    ? (
+                        <div className="topic-list">
+                            {topics.map(topic => <TopicCard key={topic.id} {...topic} />)}
                         </div>
-                        <h3>How do I beat Malenia without summons?</h3>
-                        <p className="muted">Elden Ring</p>
-                        <p>I keep getting wiped in phase two. What build and timing worked for you?</p>
-                        <div className="meta">
-                            <span>by NightOwl</span>
-                            <span>12 comments</span>
-                            <span>34 likes</span>
+                    )
+                    : (
+                        <div className="state" style={{ marginTop: '1.5rem' }}>
+                            No topics match your filters. Try a different game or clear the filters.
                         </div>
-                    </a>
-
-                    <a className="topic-card ps" href="details.html">
-                        <div className="tags">
-                            <span className="tag platform">PlayStation</span>
-                            <span className="tag">Looking for Group</span>
-                        </div>
-                        <h3>Need two more for Friday raid night</h3>
-                        <p className="muted">Destiny 2</p>
-                        <p>We run a chill team, no experience needed. Evenings, European time.</p>
-                        <div className="meta">
-                            <span>by RaidQueen</span>
-                            <span>5 comments</span>
-                            <span>9 likes</span>
-                        </div>
-                    </a>
-
-                    <a className="topic-card switch" href="details.html">
-                        <div className="tags">
-                            <span className="tag platform">Switch</span>
-                            <span className="tag">Reviews</span>
-                        </div>
-                        <h3>Is Hollow Knight worth it in 2026?</h3>
-                        <p className="muted">Hollow Knight</p>
-                        <p>Thinking of picking it up. Is the map system as confusing as people say?</p>
-                        <div className="meta">
-                            <span>by PixelPanda</span>
-                            <span>21 comments</span>
-                            <span>58 likes</span>
-                        </div>
-                    </a>
-                </div>
-
-                {/* component: EmptyState (show when no topics match) */}
-                <div className="state" style={{ marginTop: '1.5rem' }}>
-                    No topics match your filters. Try a different game or clear the filters.
-                </div>
+                    )
+                }
             </section>
         </main>
     );

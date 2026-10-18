@@ -1,0 +1,30 @@
+import { Link } from 'react-router';
+
+export default function TopicCard({ 
+    id,
+    platform,
+    category,
+    title,
+    content,
+    author,
+    comments,
+    likes,
+}) {
+        return (  <li className={`topic-card ${platform}`}>
+            <Link to={`/topic-details/${id}`}>
+                <div className="tags">
+                    <span className="tag platform">{platform}</span>
+                    <span className="tag">{category}</span>
+                </div>
+            </Link>
+            <h3>{title}</h3>
+            <p className="muted">{platform}</p>
+            <p>{content}</p>
+            <div className="meta">
+                <span>by {author}</span>
+                <span>{comments} comments</span>
+                <span>{likes} likes</span>
+            </div>
+        </li>
+    )
+}

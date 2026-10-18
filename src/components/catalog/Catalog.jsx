@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import request from "../../utils/request";
 import TopicCard from "../topic-card/TopicCard";
 
@@ -21,9 +22,9 @@ export default function Catalog() {
                             Ask for help, share tips and find people to play with.
                         </p>
                     </div>
-                    <a className="btn btn-primary" href="create.html">
+                    <Link className="btn btn-primary" to="/create">
                         Start a topic
-                    </a>
+                    </Link>
                 </div>
 
                 {/* component: TopicFilters (controlled inputs) */}

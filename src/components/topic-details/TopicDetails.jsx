@@ -48,7 +48,7 @@ export default function TopicDetails() {
                             ♥ Like <span>{game.likes}</span>
                         </button>
                         {/* Edit / Delete: visible to the AUTHOR only */}
-                        <a className="btn" href="edit.html">Edit</a>
+                        <Link className="btn" to={`/edit/${topicId}`}>Edit</Link>
                         <button className="btn btn-danger" type="button" onClick={deleteGameHandler}>Delete</button>
                     </div>
                 </article>
@@ -84,7 +84,7 @@ export default function TopicDetails() {
 
                     {/* Guest version of the form area */}
                     <p className="guest-note" style={{ marginTop: '1rem' }}>
-                        <a href="login.html">Log in</a> to comment or like this topic.
+                        <Link to="/login">Log in</Link> to comment or like this topic.
                     </p>
                 </div>
             </section>

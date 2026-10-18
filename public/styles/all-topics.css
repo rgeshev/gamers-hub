@@ -1,0 +1,31 @@
+/* ============ FILTER BAR (component: TopicFilters) ============ */
+.filters {
+  display: grid; gap: .75rem;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 720px) { .filters { grid-template-columns: 1fr 1fr; } .filters .search { grid-column: 1 / -1; } }
+
+/* ============ TOPIC CARD (component: TopicCard) ============ */
+.topic-list { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.topic-card {
+  display: flex; flex-direction: column; gap: .5rem;
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 6px solid var(--platform, var(--line));   /* platform colour stripe */
+  border-radius: var(--radius); padding: 1.1rem 1.2rem;
+}
+.topic-card:hover { background: var(--panel-2); }
+.topic-card.pc { --platform: var(--pc); }
+.topic-card.ps { --platform: var(--ps); }
+.topic-card.xbox { --platform: var(--xbox); }
+.topic-card.switch { --platform: var(--switch); }
+.topic-card.mobile { --platform: var(--mobile); }
+.topic-card h3 { margin: 0; }
+.topic-card p { margin: 0; color: var(--muted); font-size: .95rem; }
+.tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+.tag {
+  font-size: .8rem; font-weight: 500; padding: .1rem .6rem;
+  border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line);
+}
+.tag.platform { border-color: var(--platform); color: var(--platform); }
+.meta { margin-top: auto; padding-top: .5rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); }

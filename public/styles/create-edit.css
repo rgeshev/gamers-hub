@@ -1,0 +1,7 @@
+/* ============ CREATE / EDIT FORMS ============ */
+.form-card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.5rem; max-width: 560px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }

@@ -1,0 +1,8 @@
+/* ============ COMMENTS (components: CommentList, CommentItem, CommentForm) ============ */
+.comments { max-width: 720px; }
+.comment { border-top: 1px solid var(--line); padding: 1rem 0; }
+.comment header { display: flex; gap: .75rem; align-items: baseline; margin-bottom: .25rem; }
+.comment header strong { font-weight: 700; }
+.comment p { margin: 0; }
+.guest-note { background: var(--panel); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1rem; }
+.guest-note a { color: var(--accent); font-weight: 700; }

@@ -1,0 +1,5 @@
+/* ============ TOPIC DETAILS (page: Details) ============ */
+.details { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
+.details-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
+.like-btn { display: inline-flex; gap: .5rem; align-items: center; }
+.like-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }

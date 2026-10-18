@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/style.css">
+  <title>Gamers Hub</title>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="index.html">Gamers<span>Hub</span></a>
+      <!-- Navigation -->
+      <nav class="nav" aria-label="Main">
+        <a href="catalog.html">Catalog</a>
+        <!-- Logged-in users -->
+        <div id="user">
+          <a href="create.html">Add Topic</a>
+          <span class="user">Hi, NightOwl</span>
+          <a href="index.html">Logout</a>
+        </div>
+        <!-- Guest users -->
+        <div id="guest">
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+  <section class="page" id="welcome">
+    <div class="welcome-message">
+      <h2>Level up your</h2>
+      <h3>Game talk</h3>
+      <p>Ask for help, share tips and find people to play with.</p>
+      <a class="btn btn-primary" href="catalog.html">Browse topics</a>
+    </div>
+    <div id="latest">
+      <h2>Latest topics</h2>
+      <div class="topic-list">
+        <!-- Display cards for the newest topics (if any) -->
+        <a class="topic-card pc" href="details.html">
+        <div class="tags"><span class="tag platform">PC</span><span class="tag">Help &amp; Tips</span></div>
+        <h3>How do I beat Malenia without summons?</h3>
+        <p class="muted">Elden Ring</p>
+        <p>I keep getting wiped in phase two. What build and timing worked for you?</p>
+        <div class="meta"><span>by NightOwl</span><span>12 comments</span><span>34 likes</span></div>
+      </a>
+        <a class="topic-card ps" href="details.html">
+        <div class="tags"><span class="tag platform">PlayStation</span><span class="tag">Looking for Group</span></div>
+        <h3>Need two more for Friday raid night</h3>
+        <p class="muted">Destiny 2</p>
+        <p>We run a chill team, no experience needed. Evenings, European time.</p>
+        <div class="meta"><span>by RaidQueen</span><span>5 comments</span><span>9 likes</span></div>
+      </a>
+        <a class="topic-card switch" href="details.html">
+        <div class="tags"><span class="tag platform">Switch</span><span class="tag">Reviews</span></div>
+        <h3>Is Hollow Knight worth it in 2026?</h3>
+        <p class="muted">Hollow Knight</p>
+        <p>Thinking of picking it up. Is the map system as confusing as people say?</p>
+        <div class="meta"><span>by PixelPanda</span><span>21 comments</span><span>58 likes</span></div>
+      </a>
+      </div>
+      <!-- Display paragraph: if there are no topics -->
+      <!-- <div class="state">No topics yet</div> -->
+    </div>
+  </section>
+  </main>
+
+  <footer class="site-footer">
+  <div class="container">Gamers Hub &copy; 2026. A community project.</div>
+</footer>
+</body>
+
+</html>

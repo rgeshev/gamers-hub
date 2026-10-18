@@ -1,0 +1,22 @@
+/* ============ HEADER (component: Header) ============ */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.site-header .container {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; padding-block: .75rem;
+}
+.logo { font: 700 1.4rem var(--font-display); }
+.logo span { color: var(--accent); }
+.nav { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.nav a { padding: .4rem .8rem; border-radius: var(--radius); color: var(--muted); }
+.nav a:hover { background: var(--panel-2); color: var(--text); }
+.nav .user { color: var(--text); font-weight: 500; }
+
+/* ============ FOOTER ============ */
+.site-footer { border-top: 1px solid var(--line); padding: 1.5rem 0; color: var(--muted); font-size: .9rem; }
+
+#user,
+#guest { display: flex; align-items: center; gap: .25rem; }

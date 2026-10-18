@@ -1,6 +1,20 @@
-import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router';
+import request from '../../utils/request';
+import { formatDate } from '../../utils/formatDate';
 
 export default function TopicDetails() {
+    const { topicId } = useParams();
+    const [game, setGame] = useState({});
+
+    useEffect(() => {
+        request(`/topics?id=eq.${topicId}`)
+        .then(topics => {
+            setGame(topics[0] ?? {})
+        })
+        .catch(error => alert(error))
+    }, [topicId])
+
     return (
         <main className="container">
             <section className="page" id="topic-details">
@@ -15,16 +29,16 @@ export default function TopicDetails() {
                         <span className="tag platform">PC</span>
                         <span className="tag">Help & Tips</span>
                     </div>
-                    <h1>How do I beat Malenia without summons?</h1>
-                    <p className="muted">Elden Ring · posted by NightOwl on 12 Oct 2026</p>
+                    <h1>{game.title}</h1>
+                    <p className="muted">{game.game} · posted by {game.author} on {formatDate(game.created_at)}</p>
                     <p>
-                        I keep getting wiped in phase two. I'm using a strength build with a heavy greatsword and I can't find an opening for the waterfowl dance. What build and timing worked for you?
+                        {game.content}
                     </p>
 
                     <div className="details-actions">
                         {/* Like: logged-in only. aria-pressed toggles when liked */}
                         <button className="btn like-btn" aria-pressed="false">
-                            ♥ Like <span>34</span>
+                            ♥ Like <span>{game.likes}</span>
                         </button>
                         {/* Edit / Delete: visible to the AUTHOR only */}
                         <a className="btn" href="edit.html">Edit</a>
@@ -33,23 +47,18 @@ export default function TopicDetails() {
                 </article>
 
                 <div className="comments">
-                    <h2>Comments (2)</h2>
+                    <h2>Comments ({game.comments?.length || 0})</h2>
 
                     {/* component: CommentItem */}
-                    <div className="comment">
-                        <header>
-                            <strong>RaidQueen</strong>
-                            <span className="muted">12 Oct, 18:40</span>
-                        </header>
-                        <p>Bleed build with Uchigatana. Dodge toward her during the flurry, not away.</p>
-                    </div>
-                    <div className="comment">
-                        <header>
-                            <strong>PixelPanda</strong>
-                            <span className="muted">12 Oct, 19:05</span>
-                        </header>
-                        <p>Spirit ash is not allowed here, but a shield with Flame Art helped me a lot.</p>
-                    </div>
+                    {game.comments?.map((comment) => (
+                        <div className="comment" key={comment.id}>
+                            <header>
+                                <strong>{comment.author}</strong>
+                                <span className="muted">{formatDate(comment.created_at)}</span>
+                            </header>
+                            <p>{comment.content}</p>
+                        </div>
+                    ))}
 
                     {/* component: CommentForm (logged-in only) */}
                     <form style={{ marginTop: '1rem' }} onSubmit={(e) => e.preventDefault()}>

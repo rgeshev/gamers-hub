@@ -1,11 +1,10 @@
 const url = "https://ctzsulvvawsjbygvkapk.supabase.co/rest/v1/";
-const apiKey = "sb_publishable_hkpf60MzQP3eB3cVSgexmA_zCKQ16sw"
 
 export default async function request(path = "/", method = 'GET', data = null, opts = {}) {
     const options = {
         headers: {
-            apikey: apiKey,
-            Authorization: `Bearer ${apiKey}`,
+            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
         },
         ...opts,
     };

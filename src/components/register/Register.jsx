@@ -23,13 +23,11 @@ export default function Register({
             return;
         }
 
-        onRegister({ email });
+        onRegister({ username, email });
         navigate('/');
     };
 
     return (
-        <>
-        { user && <p>Welcome, {user.email}!</p>}
         <main className="container">
             <section className="page" id="register-page">
                 <h1>Create your account</h1>
@@ -60,6 +58,5 @@ export default function Register({
                 </form>
             </section>
         </main>
-        </>
     );
 }

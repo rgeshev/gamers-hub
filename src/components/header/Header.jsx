@@ -1,6 +1,8 @@
 import { Link } from 'react-router';
 
-export default function Header() {
+export default function Header({
+    user,
+}) {
     return (
         <header className="site-header">
             <div className="container">
@@ -11,16 +13,19 @@ export default function Header() {
                 <nav className="nav" aria-label="Main">
                     <Link to="/catalog">Catalog</Link>
                     {/* Logged-in users */}
+                    { user ? (
                     <div id="user">
                         <Link to="/create">Add Topic</Link>
-                        <span className="user">Hi, NightOwl</span>
+                        <span className="user">Hi, {user.username || user.email}</span>
                         <a href="/logout">Logout</a>
                     </div>
-                    {/* Guest users */}
+                    ) : (
                     <div id="guest">
                         <Link to="/login">Login</Link>
                         <Link to="/register">Register</Link>
                     </div>
+                    )}
+                    {/* Guest users */}
                 </nav>
             </div>
         </header>

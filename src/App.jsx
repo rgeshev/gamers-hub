@@ -8,11 +8,20 @@ import TopicEdit from './components/topic-edit/TopicEdit';
 import Login from './components/login/Login';
 import Register from './components/register/Register';
 import { Routes, Route } from 'react-router';
+import { useState } from 'react';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const userAuthHandler = (userData) => {
+    setUser(userData);
+  }
+
   return (
     <>
+    
       <Header />
+      { user && <p>Welcome, {user.email}!</p>}
       
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,7 +30,7 @@ function App() {
         <Route path="/create" element={<TopicCreate />} />
         <Route path="/edit/:topicId" element={<TopicEdit />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Register onRegister={userAuthHandler} />} />
       </Routes>
       
       <Footer />

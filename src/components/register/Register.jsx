@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-export default function Register() {
-    const [user, setUser] = useState(null);
+export default function Register({
+    onRegister,
+}) {
+    
     const navigate = useNavigate();
 
     const registerAction = (formData) => {
@@ -22,8 +23,8 @@ export default function Register() {
             return;
         }
 
-        setUser({ email });
-        //navigate('/');
+        onRegister({ email });
+        navigate('/');
     };
 
     return (

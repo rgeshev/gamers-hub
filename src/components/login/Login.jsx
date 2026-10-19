@@ -31,11 +31,11 @@ export default function Login({
                     </div>
                     <div className="field">
                         <label htmlFor="l-email">Email</label>
-                        <input id="l-email" type="email" autoComplete="email" />
+                        <input id="l-email" type="email" name="email" autoComplete="email" />
                     </div>
                     <div className="field">
                         <label htmlFor="l-pass">Password</label>
-                        <input id="l-pass" type="password" autoComplete="current-password" />
+                        <input id="l-pass" type="password" name="password" autoComplete="current-password" />
                     </div>
                     <button className="btn btn-primary" type="submit">
                         Log in

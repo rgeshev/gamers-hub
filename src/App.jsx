@@ -9,12 +9,19 @@ import Login from './components/login/Login';
 import Register from './components/register/Register';
 import { Routes, Route } from 'react-router';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import Logout from './components/logout/Logout';
 
 function App() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   const userAuthHandler = (userData) => {
     setUser(userData);
+  }
+
+  const logoutAction = () => {
+    setUser(null);
   }
   
   return (
@@ -30,6 +37,7 @@ function App() {
         <Route path="/edit/:topicId" element={<TopicEdit />} />
         <Route path="/login" element={<Login onLogin={userAuthHandler} />} />
         <Route path="/register" element={<Register onRegister={userAuthHandler} />} />
+        <Route path="/logout" element={<Logout onLogout={logoutAction} />} />
       </Routes>
       
       <Footer />

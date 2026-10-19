@@ -6,10 +6,7 @@ export default function Register() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    const registerHandler = (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
+    const registerAction = (formData) => {
         const username = formData.get('username');
         const email = formData.get('email');
         const password = formData.get('password');
@@ -35,7 +32,7 @@ export default function Register() {
         <main className="container">
             <section className="page" id="register-page">
                 <h1>Create your account</h1>
-                <form className="form-card" onSubmit={registerHandler} noValidate>
+                <form className="form-card" action={registerAction} noValidate>
                     <div className="field">
                         <label htmlFor="r-name">Username</label>
                         <input id="r-name" type="text" name="username" autoComplete="username" />

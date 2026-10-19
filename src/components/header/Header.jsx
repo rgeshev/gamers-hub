@@ -14,7 +14,7 @@ export default function Header() {
                     <div id="user">
                         <Link to="/create">Add Topic</Link>
                         <span className="user">Hi, NightOwl</span>
-                        <a href="index.html">Logout</a>
+                        <a href="/logout">Logout</a>
                     </div>
                     {/* Guest users */}
                     <div id="guest">

@@ -16,7 +16,7 @@ function App() {
   const userAuthHandler = (userData) => {
     setUser(userData);
   }
-
+  
   return (
     <>
     
@@ -28,7 +28,7 @@ function App() {
         <Route path="/topic-details/:topicId" element={<TopicDetails />} />
         <Route path="/create" element={<TopicCreate />} />
         <Route path="/edit/:topicId" element={<TopicEdit />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login onLogin={userAuthHandler} />} />
         <Route path="/register" element={<Register onRegister={userAuthHandler} />} />
       </Routes>
       

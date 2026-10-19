@@ -1,11 +1,30 @@
 import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
 
-export default function Login() {
+export default function Login({
+    onLogin,
+}) {
+
+    const navigate = useNavigate();
+
+    const submitAction = (formData) => {
+        const { email, password } = Object.fromEntries(formData);
+
+        if (!email || !password) {
+            alert('Email and password are required');
+            return;
+        }
+
+        onLogin({email});
+
+        navigate('/');
+    };
+
     return (
         <main className="container">
             <section className="page" id="login-page">
                 <h1>Log in</h1>
-                <form className="form-card" onSubmit={(e) => e.preventDefault()} noValidate>
+                <form className="form-card" action={submitAction} noValidate>
                     {/* API error example */}
                     <div className="alert-error" role="alert">
                         Wrong email or password. Please try again.

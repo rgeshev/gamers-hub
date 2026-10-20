@@ -7,7 +7,7 @@ export default function Register({
     
     const navigate = useNavigate();
 
-    const registerAction = (formData) => {
+    const registerAction = async (formData) => {
         const username = formData.get('username');
         const email = formData.get('email');
         const password = formData.get('password');
@@ -23,8 +23,14 @@ export default function Register({
             return;
         }
 
-        onRegister({ username, email });
-        navigate('/');
+        try {
+            const registered = await onRegister({ username, email, password });
+            if (registered) {
+                navigate('/');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     return (

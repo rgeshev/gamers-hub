@@ -7,7 +7,7 @@ export default function Login({
 
     const navigate = useNavigate();
 
-    const submitAction = (formData) => {
+    const submitAction = async (formData) => {
         const { email, password } = Object.fromEntries(formData);
 
         if (!email || !password) {
@@ -15,9 +15,14 @@ export default function Login({
             return;
         }
 
-        onLogin({email});
-
-        navigate('/');
+        try {
+            const loggedIn = await onLogin({ email, password });
+            if (loggedIn) {
+                navigate('/');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     return (

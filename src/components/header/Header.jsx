@@ -16,8 +16,8 @@ export default function Header({
                     { user ? (
                     <div id="user">
                         <Link to="/create">Add Topic</Link>
-                        <span className="user">Hi, {user.username || user.email}</span>
-                        <a href="/logout">Logout</a>
+                        <span className="user">Hi, {user.username}</span>
+                        <Link to="/logout">Logout</Link>
                     </div>
                     ) : (
                     <div id="guest">

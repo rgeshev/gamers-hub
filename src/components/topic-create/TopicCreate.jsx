@@ -1,17 +1,70 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
+import request, { resolveAuthorId } from '../../utils/request';
 
-export default function TopicCreate() {
+const initialValues = {
+    title: '',
+    game: '',
+    platform: '',
+    category: '',
+    image: '',
+    content: '',
+}
+
+export default function TopicCreate({ user }) {
+    const navigate = useNavigate();
+    const [values, setValues] = useState(initialValues);
+
+    const changeHandler = (e) => {
+        setValues(state => ({
+            ...state,
+            [e.target.name]: e.target.value,
+        }))
+    }
+
+    const submitAction = async () => {
+        if (!user?.id) {
+            alert('Please log in to create a topic.');
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const authorId = await resolveAuthorId(user);
+
+            const payload = {
+                title: values.title,
+                game_title: values.game,
+                platform: values.platform,
+                category: values.category,
+                content: values.content,
+                author_id: authorId,
+            };
+
+            if (values.image) {
+                payload.image_url = values.image;
+            }
+
+            await request("/topics", "POST", payload);
+            navigate("/catalog");
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
     return (
         <main className="container">
             <section className="page" id="add-page">
                 <h1>Start a topic</h1>
-                <form className="form-card" onSubmit={(e) => e.preventDefault()} noValidate>
+                <form className="form-card" action={submitAction} noValidate>
                     <div className="field invalid">
                         <label htmlFor="title">Title</label>
                         <input
                             id="title"
                             type="text"
-                            defaultValue="Help"
+                            name="title"
+                            value={values.title}
+                            onChange={changeHandler}
                             aria-describedby="title-err"
                         />
                         <p className="error-text" id="title-err">
@@ -21,13 +74,13 @@ export default function TopicCreate() {
 
                     <div className="field">
                         <label htmlFor="game">Game</label>
-                        <input id="game" type="text" placeholder="e.g. Elden Ring" />
+                        <input id="game" name="game" type="text" placeholder="e.g. Elden Ring" value={values.game} onChange={changeHandler} />
                     </div>
 
                     <div className="form-row">
                         <div className="field">
                             <label htmlFor="platform">Platform</label>
-                            <select id="platform" defaultValue="">
+                            <select id="platform" name="platform" value={values.platform} onChange={changeHandler}>
                                 <option value="">Select platform</option>
                                 <option>PC</option>
                                 <option>PlayStation</option>
@@ -38,7 +91,7 @@ export default function TopicCreate() {
                         </div>
                         <div className="field">
                             <label htmlFor="category">Category</label>
-                            <select id="category" defaultValue="">
+                            <select id="category" name="category" value={values.category} onChange={changeHandler}>
                                 <option value="">Select category</option>
                                 <option>Help & Tips</option>
                                 <option>News</option>
@@ -51,12 +104,12 @@ export default function TopicCreate() {
 
                     <div className="field">
                         <label htmlFor="image">Image URL (optional)</label>
-                        <input id="image" type="url" placeholder="https://..." />
+                        <input id="image" name="image" type="url" placeholder="https://..." value={values.image} onChange={changeHandler} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="content">Content</label>
-                        <textarea id="content" placeholder="At least 20 characters" />
+                        <textarea id="content" name="content" placeholder="At least 20 characters" value={values.content} onChange={changeHandler} />
                     </div>
 
                     <button className="btn btn-primary" type="submit">

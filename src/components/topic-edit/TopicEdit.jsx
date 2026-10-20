@@ -4,22 +4,11 @@ import request from '../../utils/request';
 
 const initialValues = {
     title: '',
-    game: '',
+    game_title: '',
     platform: '',
     category: '',
-    image: '',
+    image_url: '',
     content: '',
-}
-
-function mapTopic(row) {
-    return {
-        title: row.title ?? '',
-        game: row.game_title ?? row.game ?? '',
-        platform: row.platform ?? '',
-        category: row.category ?? '',
-        image: row.image_url ?? row.image ?? '',
-        content: row.content ?? '',
-    };
 }
 
 export default function TopicEdit() {
@@ -36,47 +25,27 @@ export default function TopicEdit() {
 
     useEffect(() => {
         request(`/topics?id=eq.${topicId}`)
-            .then(data => {
-                if (data[0]) {
-                    setTopic(mapTopic(data[0]));
-                }
-            })
+            .then(data => setTopic(data[0] ?? initialValues))
             .catch(error => alert(error.message));
     }, [topicId]);
 
-    const submitAction = async () => {
-        try {
-            const payload = {
-                title: topic.title,
-                game_title: topic.game,
-                platform: topic.platform,
-                category: topic.category,
-                content: topic.content,
-            };
-
-            if (topic.image) {
-                payload.image_url = topic.image;
-            }
-
-            await request(`/topics?id=eq.${topicId}`, 'PATCH', payload);
-            navigate(`/topic-details/${topicId}`);
-        } catch (error) {
-            alert(error.message);
-        }
+    const editAction = async () => {
+        const result = await request(`/topics?id=eq.${topicId}`, 'PUT', topic);
+        navigate(`/topic-details/${topicId}`);
     }
 
     return (
         <main className="container">
             <section className="page" id="edit-page">
                 <h1>Edit topic</h1>
-                <form className="form-card" action={submitAction} noValidate>
+                <form className="form-card" action={editAction} noValidate>
                     <div className="field">
                         <label htmlFor="title">Title</label>
                         <input
                             id="title"
                             type="text"
                             name="title"
-                            value={topic.title}
+                            value={topic.title ?? ''}
                             onChange={changeHandler}
                             aria-describedby="title-err"
                         />
@@ -84,13 +53,13 @@ export default function TopicEdit() {
 
                     <div className="field">
                         <label htmlFor="game">Game</label>
-                        <input id="game" type="text" name="game" value={topic.game} onChange={changeHandler} />
+                        <input id="game" type="text" name="game_title" value={topic.game_title ?? ''} onChange={changeHandler} />
                     </div>
 
                     <div className="form-row">
                         <div className="field">
                             <label htmlFor="platform">Platform</label>
-                            <select id="platform" name="platform" value={topic.platform} onChange={changeHandler}>
+                            <select id="platform" name="platform" value={topic.platform ?? ''} onChange={changeHandler}>
                                 <option value="">Select platform</option>
                                 <option>PC</option>
                                 <option>PlayStation</option>
@@ -101,7 +70,7 @@ export default function TopicEdit() {
                         </div>
                         <div className="field">
                             <label htmlFor="category">Category</label>
-                            <select id="category" name="category" value={topic.category} onChange={changeHandler}>
+                            <select id="category" name="category" value={topic.category ?? ''} onChange={changeHandler}>
                                 <option value="">Select category</option>
                                 <option>Help & Tips</option>
                                 <option>News</option>
@@ -114,12 +83,12 @@ export default function TopicEdit() {
 
                     <div className="field">
                         <label htmlFor="image">Image URL (optional)</label>
-                        <input id="image" type="url" name="image" value={topic.image} onChange={changeHandler} />
+                        <input id="image" type="url" name="image_url" value={topic.image_url ?? ''} onChange={changeHandler} />
                     </div>
 
                     <div className="field">
                         <label htmlFor="content">Content</label>
-                        <textarea id="content" name="content" value={topic.content} onChange={changeHandler} />
+                        <textarea id="content" name="content" value={topic.content ?? ''} onChange={changeHandler} />
                     </div>
 
                     <button className="btn btn-primary" type="submit">

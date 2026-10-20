@@ -10,13 +10,12 @@ export default function TopicCard({
     comments,
     likes,
 }) {
-        return (  <li className={`topic-card ${platform}`}>
-            <Link to={`/topic-details/${id}`}>
-                <div className="tags">
-                    <span className="tag platform">{platform}</span>
-                    <span className="tag">{category}</span>
-                </div>
-            </Link>
+        return (
+        <Link to={`/topic-details/${id}`} className={`topic-card ${platform}`}>
+            <div className="tags">
+                <span className="tag platform">{platform}</span>
+                <span className="tag">{category}</span>
+            </div>
             <h3>{title}</h3>
             <p className="muted">{platform}</p>
             <p>{content}</p>
@@ -25,6 +24,6 @@ export default function TopicCard({
                 <span>{comments} comments</span>
                 <span>{likes} likes</span>
             </div>
-        </li>
+        </Link>
     )
 }

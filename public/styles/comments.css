@@ -6,3 +6,6 @@
 .comment p { margin: 0; }
 .guest-note { background: var(--panel); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1rem; }
 .guest-note a { color: var(--accent); font-weight: 700; }
+.create-comment { margin-top: 1rem; }
+.create-comment .form { display: flex; flex-direction: column; gap: .75rem; }
+.create-comment input.btn { width: auto; align-self: start; }

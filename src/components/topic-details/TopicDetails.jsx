@@ -2,11 +2,19 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import request from '../../utils/request';
 import { formatDate } from '../../utils/formatDate';
+import CreateComment from '../create-comment/CreateComment';
 
-export default function TopicDetails() {
+export default function TopicDetails({ user }) {
     const { topicId } = useParams();
     const navigate = useNavigate();
     const [game, setGame] = useState({});
+    const [comments, setComments] = useState([]);
+
+    const loadComments = () => {
+        request(`/comments?topic_id=eq.${topicId}&order=created_at.asc`)
+            .then(setComments)
+            .catch(error => alert(error.message));
+    };
 
     useEffect(() => {
         request(`/topics?id=eq.${topicId}`)
@@ -14,6 +22,8 @@ export default function TopicDetails() {
             setGame(topics[0] ?? {})
         })
         .catch(error => alert(error))
+
+        loadComments();
     }, [topicId]);
 
     const deleteGameHandler = () => {
@@ -37,7 +47,7 @@ export default function TopicDetails() {
                         <span className="tag">Help & Tips</span>
                     </div>
                     <h1>{game.title}</h1>
-                    <p className="muted">{game.game} · posted by {game.author} on {formatDate(game.created_at)}</p>
+                    <p className="muted">{game.game_title || game.game} · posted by {game.author} on {formatDate(game.created_at)}</p>
                     <p>
                         {game.content}
                     </p>
@@ -54,38 +64,26 @@ export default function TopicDetails() {
                 </article>
 
                 <div className="comments">
-                    <h2>Comments ({game.comments?.length || 0})</h2>
+                    <h2>Comments ({comments.length})</h2>
 
-                    {/* component: CommentItem */}
-                    {game.comments?.map((comment) => (
+                    {comments.map((comment) => (
                         <div className="comment" key={comment.id}>
                             <header>
-                                <strong>{comment.author}</strong>
+                                <strong>{comment.author_id}</strong>
                                 <span className="muted">{formatDate(comment.created_at)}</span>
                             </header>
-                            <p>{comment.content}</p>
+                            <p>{comment.text}</p>
                         </div>
                     ))}
 
-                    {/* component: CommentForm (logged-in only) */}
-                    <form style={{ marginTop: '1rem' }} onSubmit={(e) => e.preventDefault()}>
-                        <div className="field">
-                            <label htmlFor="comment">Add a comment</label>
-                            <textarea
-                                id="comment"
-                                maxLength={500}
-                                placeholder="Share your tip or answer"
-                            />
-                        </div>
-                        <button className="btn btn-primary" type="submit">
-                            Post comment
-                        </button>
-                    </form>
-
-                    {/* Guest version of the form area */}
-                    <p className="guest-note" style={{ marginTop: '1rem' }}>
-                        <Link to="/login">Log in</Link> to comment or like this topic.
-                    </p>
+                    {user
+                        ? <CreateComment user={user} topicId={topicId} onCreated={loadComments} />
+                        : (
+                            <p className="guest-note" style={{ marginTop: '1rem' }}>
+                                <Link to="/login">Log in</Link> to comment or like this topic.
+                            </p>
+                        )
+                    }
                 </div>
             </section>
         </main>

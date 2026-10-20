@@ -100,7 +100,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
-        <Route path="/topic-details/:topicId" element={<TopicDetails />} />
+        <Route path="/topic-details/:topicId" element={<TopicDetails user={user} />} />
         <Route path="/create" element={<TopicCreate user={user} />} />
         <Route path="/edit/:topicId" element={<TopicEdit />} />
         <Route path="/login" element={<Login onLogin={userAuthHandler} />} />

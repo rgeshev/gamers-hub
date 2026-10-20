@@ -53,7 +53,11 @@ export default async function request(path = "/", method = 'GET', data = null, o
         throw new Error(parseError(text, `HTTP error! status: ${response.status}`));
     }
 
-    return text ? JSON.parse(text) : null;
+    if ([204, 201].includes(response.status)) {
+        return null;
+    } 
+
+    return JSON.parse(text);
 }
 
 async function authFetch(path, data) {

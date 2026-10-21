@@ -1,5 +1,7 @@
 /* ============ COMMENTS (components: CommentList, CommentItem, CommentForm) ============ */
 .comments { max-width: 720px; }
+.details-comments ul { list-style: none; margin: 0; padding: 0; }
+.no-comment { color: var(--muted); }
 .comment { border-top: 1px solid var(--line); padding: 1rem 0; }
 .comment header { display: flex; gap: .75rem; align-items: baseline; margin-bottom: .25rem; }
 .comment header strong { font-weight: 700; }

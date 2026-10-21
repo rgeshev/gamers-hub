@@ -3,27 +3,24 @@ import { useParams, Link, useNavigate } from 'react-router';
 import request from '../../utils/request';
 import { formatDate } from '../../utils/formatDate';
 import CreateComment from '../create-comment/CreateComment';
+import CommentsList from '../comments-list/CommentsList';
 
 export default function TopicDetails({ user }) {
     const { topicId } = useParams();
     const navigate = useNavigate();
     const [game, setGame] = useState({});
-    const [comments, setComments] = useState([]);
-
-    const loadComments = () => {
-        request(`/comments?topic_id=eq.${topicId}&order=created_at.asc`)
-            .then(setComments)
-            .catch(error => alert(error.message));
-    };
+    const [commentsVersion, setCommentsVersion] = useState(0);
 
     useEffect(() => {
+        if (!topicId || topicId === 'undefined') {
+            return;
+        }
+
         request(`/topics?id=eq.${topicId}`)
         .then(topics => {
             setGame(topics[0] ?? {})
         })
         .catch(error => alert(error))
-
-        loadComments();
     }, [topicId]);
 
     const deleteGameHandler = () => {
@@ -64,20 +61,10 @@ export default function TopicDetails({ user }) {
                 </article>
 
                 <div className="comments">
-                    <h2>Comments ({comments.length})</h2>
-
-                    {comments.map((comment) => (
-                        <div className="comment" key={comment.id}>
-                            <header>
-                                <strong>{comment.author_id}</strong>
-                                <span className="muted">{formatDate(comment.created_at)}</span>
-                            </header>
-                            <p>{comment.text}</p>
-                        </div>
-                    ))}
+                    <CommentsList topicId={topicId} refresh={commentsVersion} />
 
                     {user
-                        ? <CreateComment user={user} topicId={topicId} onCreated={loadComments} />
+                        ? <CreateComment user={user} topicId={topicId} onCreated={() => setCommentsVersion(version => version + 1)} />
                         : (
                             <p className="guest-note" style={{ marginTop: '1rem' }}>
                                 <Link to="/login">Log in</Link> to comment or like this topic.

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import request from '../../utils/request';
+import { commentApi } from '../../api';
 import CommentItem from './comment-item/CommentItem';
 
 export default function CommentsList({
@@ -16,11 +16,8 @@ export default function CommentsList({
             return;
         }
 
-        request(`/comments?topic_id=eq.${topicId}&select=*,profiles(username)`)
-            .then(result => setComments(result.map(comment => ({
-                ...comment,
-                author: comment.profiles?.username,
-            }))))
+        commentApi.getAll(topicId)
+            .then(setComments)
             .catch(error => alert(error.message));
     }, [topicId, refresh]);
 

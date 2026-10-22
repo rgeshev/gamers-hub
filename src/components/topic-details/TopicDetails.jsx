@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
-import request from '../../utils/request';
+import { topicApi } from '../../api';
 import { formatDate } from '../../utils/formatDate';
 import CreateComment from '../create-comment/CreateComment';
 import CommentsList from '../comments-list/CommentsList';
@@ -16,15 +16,15 @@ export default function TopicDetails({ user }) {
             return;
         }
 
-        request(`/topics?id=eq.${topicId}`)
-        .then(topics => {
-            setGame(topics[0] ?? {})
+        topicApi.getOne(topicId)
+        .then(topic => {
+            setGame(topic ?? {})
         })
         .catch(error => alert(error))
     }, [topicId]);
 
     const deleteGameHandler = () => {
-        request(`/topics?id=eq.${topicId}`, 'DELETE')
+        topicApi.remove(topicId)
             .then(() => navigate('/catalog'))
             .catch(error => alert(error));
     };

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import request from "../../utils/request";
+import { topicApi } from "../../api";
 import TopicCard from "../topic-card/TopicCard";
 
 export default function Catalog() {
     const [topics, setTopics] = useState([]);
 
     useEffect(() => {
-        request("/topics?order=created_at.desc")
+        topicApi.getAll()
             .then(setTopics)
             .catch(err => alert(err))
     }, []);

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import request from '../../utils/request';
+import { topicApi } from '../../api';
 
 const initialValues = {
     title: '',
@@ -24,13 +24,13 @@ export default function TopicEdit() {
     }
 
     useEffect(() => {
-        request(`/topics?id=eq.${topicId}`)
-            .then(data => setTopic(data[0] ?? initialValues))
+        topicApi.getOne(topicId)
+            .then(data => setTopic(data ?? initialValues))
             .catch(error => alert(error.message));
     }, [topicId]);
 
     const editAction = async () => {
-        const result = await request(`/topics?id=eq.${topicId}`, 'PUT', topic);
+        const result = await topicApi.edit(topicId, topic);
         navigate(`/topic-details/${topicId}`);
     }
 

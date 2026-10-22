@@ -10,7 +10,7 @@ import Register from './components/register/Register';
 import { Routes, Route } from 'react-router';
 import { useState } from 'react';
 import Logout from './components/logout/Logout';
-import { login, logout, register } from './api/auth-api';
+import { authApi } from './api';
 
 function withUserId(account) {
   return account.id ? account : { ...account, id: crypto.randomUUID() };
@@ -80,7 +80,7 @@ function App() {
   const userAuthHandler = async (userData) => {
     try {
       if (userData.username) {
-        const session = await register({ email: userData.email, password: userData.password });
+        const session = await authApi.register({ email: userData.email, password: userData.password });
         const account = mapAccount(session, userData.username);
         const nextUsers = [...users.filter((item) => item.email !== account.email), { ...account, password: userData.password }];
         setUsers(nextUsers);
@@ -89,7 +89,7 @@ function App() {
         return true;
       }
 
-      const session = await login({ email: userData.email, password: userData.password });
+      const session = await authApi.login({ email: userData.email, password: userData.password });
       const account = mapAccount(session);
       const found = users.find((item) => item.email === account.email);
       if (found?.username) {
@@ -105,7 +105,7 @@ function App() {
 
   const logoutAction = async () => {
     try {
-      await logout();
+      await authApi.logout();
     } catch {
       // still clear the local session
     }

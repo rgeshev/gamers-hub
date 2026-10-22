@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import request from '../../utils/request';
+import { topicApi } from '../../api';
 import TopicCard from '../topic-card/TopicCard';
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     useEffect(() => {
         const abortController = new AbortController();
 
-        request('/topics?order=created_at.desc&limit=3', 'GET', null, { signal: abortController.signal })
+        topicApi.getLatest(3, { signal: abortController.signal })
             .then(setLatestTopics)
             .catch(error => alert(error));
         

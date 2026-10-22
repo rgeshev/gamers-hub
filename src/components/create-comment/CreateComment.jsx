@@ -1,4 +1,5 @@
-import request, { resolveAuthorId } from '../../utils/request';
+import { commentApi } from '../../api';
+import { resolveAuthorId } from '../../utils/request';
 
 export default function CreateComment({
     user,
@@ -13,7 +14,7 @@ export default function CreateComment({
         }
 
         try {
-            await request('/comments', 'POST', newComment);
+            await commentApi.create(newComment);
             onCreated?.();
         } catch (err) {
             alert(err.message);

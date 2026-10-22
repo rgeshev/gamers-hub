@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
-import request, { resolveAuthorId } from '../../utils/request';
+import { topicApi } from '../../api';
+import { resolveAuthorId } from '../../utils/request';
 
 const initialValues = {
     title: '',
@@ -45,7 +46,7 @@ export default function TopicCreate({ user }) {
                 payload.image_url = values.image;
             }
 
-            await request("/topics", "POST", payload);
+            await topicApi.create(payload);
             navigate("/catalog");
         } catch (error) {
             alert(error.message);

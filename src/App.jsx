@@ -10,9 +10,26 @@ import Register from './components/register/Register';
 import { Routes, Route } from 'react-router';
 import { useState } from 'react';
 import Logout from './components/logout/Logout';
+import { login, logout, register } from './api/auth-api';
 
 function withUserId(account) {
   return account.id ? account : { ...account, id: crypto.randomUUID() };
+}
+
+function mapAccount(session, username) {
+  const authUser = session?.user || (session?.id ? session : {});
+
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    username:
+      username ||
+      authUser.user_metadata?.username ||
+      (authUser.email ? authUser.email.split('@')[0] : ''),
+    accessToken: session?.access_token,
+    refreshToken: session?.refresh_token,
+    authorId: authUser.id,
+  };
 }
 
 function loadAuth() {
@@ -60,35 +77,38 @@ function App() {
     }
   };
 
-  const userAuthHandler = (userData) => {
-    if (userData.username) {
-      const account = withUserId(userData);
-      const nextUsers = [...users.filter((item) => item.email !== account.email), account];
-      setUsers(nextUsers);
-      localStorage.setItem('users', JSON.stringify(nextUsers));
+  const userAuthHandler = async (userData) => {
+    try {
+      if (userData.username) {
+        const session = await register({ email: userData.email, password: userData.password });
+        const account = mapAccount(session, userData.username);
+        const nextUsers = [...users.filter((item) => item.email !== account.email), { ...account, password: userData.password }];
+        setUsers(nextUsers);
+        localStorage.setItem('users', JSON.stringify(nextUsers));
+        saveUser(account);
+        return true;
+      }
+
+      const session = await login({ email: userData.email, password: userData.password });
+      const account = mapAccount(session);
+      const found = users.find((item) => item.email === account.email);
+      if (found?.username) {
+        account.username = found.username;
+      }
       saveUser(account);
       return true;
-    }
-
-    const found = users.find((account) =>
-      account.email === userData.email && account.password === userData.password
-    );
-    if (!found) {
-      alert('Wrong email or password. Please try again.');
+    } catch (error) {
+      alert(error.message || 'Wrong email or password. Please try again.');
       return false;
     }
-
-    const account = withUserId(found);
-    if (account.id !== found.id) {
-      const nextUsers = users.map((item) => item.email === account.email ? account : item);
-      setUsers(nextUsers);
-      localStorage.setItem('users', JSON.stringify(nextUsers));
-    }
-    saveUser(account);
-    return true;
   }
 
-  const logoutAction = () => {
+  const logoutAction = async () => {
+    try {
+      await logout();
+    } catch {
+      // still clear the local session
+    }
     saveUser(null);
   }
   

@@ -60,16 +60,22 @@ export default async function request(path = "/", method = 'GET', data = null, o
     return JSON.parse(text);
 }
 
-async function authFetch(path, data) {
-    const response = await fetch(`${authUrl}${path}`, {
-        method: 'POST',
+export async function authRequest(path = "/", method = 'POST', data = null) {
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    const options = {
+        method,
         headers: {
             apikey: getApiKey(),
-            Authorization: `Bearer ${getApiKey()}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getStoredAccessToken() || getApiKey()}`,
         },
-        body: JSON.stringify(data),
-    });
+    };
+
+    if (data) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(`${authUrl}${cleanPath}`, options);
     const text = await response.text();
 
     if (!response.ok) {
@@ -77,6 +83,10 @@ async function authFetch(path, data) {
     }
 
     return text ? JSON.parse(text) : null;
+}
+
+function authFetch(path, data) {
+    return authRequest(path, 'POST', data);
 }
 
 function persistAuthor(account, authorId, accessToken) {

@@ -55,7 +55,7 @@ export default async function request(path = "/", method = 'GET', data = null, o
 
     if ([204, 201].includes(response.status)) {
         return null;
-    } 
+    }
 
     return JSON.parse(text);
 }
@@ -83,102 +83,4 @@ export async function authRequest(path = "/", method = 'POST', data = null) {
     }
 
     return text ? JSON.parse(text) : null;
-}
-
-function authFetch(path, data) {
-    return authRequest(path, 'POST', data);
-}
-
-function persistAuthor(account, authorId, accessToken) {
-    const current = getStoredUser();
-    if (!current) {
-        return;
-    }
-
-    const nextUser = {
-        ...current,
-        authorId,
-        accessToken: accessToken || current.accessToken,
-    };
-    localStorage.setItem('user', JSON.stringify(nextUser));
-
-    try {
-        const users = JSON.parse(localStorage.getItem('users')) ?? [];
-        localStorage.setItem(
-            'users',
-            JSON.stringify(
-                users.map((item) =>
-                    item.email === nextUser.email
-                        ? { ...item, authorId: nextUser.authorId, accessToken: nextUser.accessToken }
-                        : item
-                )
-            )
-        );
-    } catch {
-        // ignore invalid stored users
-    }
-}
-
-export async function resolveAuthorId(account) {
-    if (account?.authorId) {
-        return account.authorId;
-    }
-
-    const profiles = await request('/profiles?select=id,username');
-    const match = profiles?.find((profile) => profile.username === account?.username) || profiles?.[0];
-
-    if (match?.id) {
-        persistAuthor(account, match.id, account?.accessToken);
-        return match.id;
-    }
-
-    let session = null;
-    try {
-        session = await authFetch('signup', {
-            data: { username: account?.username },
-        });
-    } catch (error) {
-        const message = error.message || '';
-        if (!/anonymous/i.test(message) && account?.email && account?.password) {
-            session = await authFetch('signup', {
-                email: account.email,
-                password: account.password,
-                data: { username: account.username },
-            });
-        } else if (!/anonymous/i.test(message)) {
-            throw error;
-        }
-    }
-
-    if (!session && account?.email && account?.password) {
-        session = await authFetch('signup', {
-            email: account.email,
-            password: account.password,
-            data: { username: account.username },
-        });
-    }
-
-    const authUser = session?.user || (session?.id ? session : {});
-    const authorId = authUser.id;
-
-    if (!authorId) {
-        throw new Error('Could not create an author profile. Please try publishing again in a few minutes.');
-    }
-
-    try {
-        await request(
-            '/profiles',
-            'POST',
-            { id: authorId, username: account?.username },
-            { accessToken: session.access_token }
-        );
-    } catch (error) {
-        const message = error.message || '';
-        if (!/duplicate|unique|already exists/i.test(message)) {
-            throw error;
-        }
-    }
-
-    persistAuthor(account, authorId, session.access_token);
-    return authorId;
 }

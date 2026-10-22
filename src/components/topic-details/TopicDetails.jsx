@@ -4,12 +4,15 @@ import { topicApi } from '../../api';
 import { formatDate } from '../../utils/formatDate';
 import CreateComment from '../create-comment/CreateComment';
 import CommentsList from '../comments-list/CommentsList';
+import { getAuthorId, useAuthContext } from '../../contexts/authContext';
 
-export default function TopicDetails({ user }) {
+export default function TopicDetails() {
     const { topicId } = useParams();
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuthContext();
     const [game, setGame] = useState({});
     const [commentsVersion, setCommentsVersion] = useState(0);
+    const isOwner = Boolean(game.author_id && game.author_id === getAuthorId(user));
 
     useEffect(() => {
         if (!topicId || topicId === 'undefined') {
@@ -24,6 +27,10 @@ export default function TopicDetails({ user }) {
     }, [topicId]);
 
     const deleteGameHandler = () => {
+        if (!isOwner) {
+            return;
+        }
+
         topicApi.remove(topicId)
             .then(() => navigate('/catalog'))
             .catch(error => alert(error));
@@ -50,21 +57,25 @@ export default function TopicDetails({ user }) {
                     </p>
 
                     <div className="details-actions">
-                        {/* Like: logged-in only. aria-pressed toggles when liked */}
-                        <button className="btn like-btn" aria-pressed="false">
-                            ♥ Like <span>{game.likes}</span>
-                        </button>
-                        {/* Edit / Delete: visible to the AUTHOR only */}
-                        <Link className="btn" to={`/edit/${topicId}`}>Edit</Link>
-                        <button className="btn btn-danger" type="button" onClick={deleteGameHandler}>Delete</button>
+                        {isAuthenticated && (
+                            <button className="btn like-btn" aria-pressed="false">
+                                ♥ Like <span>{game.likes}</span>
+                            </button>
+                        )}
+                        {isOwner && (
+                            <>
+                                <Link className="btn" to={`/edit/${topicId}`}>Edit</Link>
+                                <button className="btn btn-danger" type="button" onClick={deleteGameHandler}>Delete</button>
+                            </>
+                        )}
                     </div>
                 </article>
 
                 <div className="comments">
                     <CommentsList topicId={topicId} refresh={commentsVersion} />
 
-                    {user
-                        ? <CreateComment user={user} topicId={topicId} onCreated={() => setCommentsVersion(version => version + 1)} />
+                    {isAuthenticated
+                        ? <CreateComment topicId={topicId} onCreated={() => setCommentsVersion(version => version + 1)} />
                         : (
                             <p className="guest-note" style={{ marginTop: '1rem' }}>
                                 <Link to="/login">Log in</Link> to comment or like this topic.

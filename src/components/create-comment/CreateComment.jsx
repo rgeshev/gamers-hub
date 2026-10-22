@@ -1,17 +1,24 @@
 import { commentApi } from '../../api';
-import { resolveAuthorId } from '../../utils/request';
+import { getAuthorId, useAuthContext } from '../../contexts/authContext';
 
 export default function CreateComment({
-    user,
     topicId,
     onCreated,
 }) {
+    const { user } = useAuthContext();
+
     const addCommentAction = async (formData) => {
+        const authorId = getAuthorId(user);
+        if (!authorId) {
+            alert('Please log in to comment.');
+            return;
+        }
+
         const newComment = {
             text: formData.get('text'),
-            author_id: await resolveAuthorId(user),
+            author_id: authorId,
             topic_id: topicId,
-        }
+        };
 
         try {
             await commentApi.create(newComment);

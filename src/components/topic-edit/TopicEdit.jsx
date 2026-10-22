@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { topicApi } from '../../api';
+import { getAuthorId, useAuthContext } from '../../contexts/authContext';
 
 const initialValues = {
     title: '',
@@ -14,6 +15,7 @@ const initialValues = {
 export default function TopicEdit() {
     const { topicId } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuthContext();
     const [topic, setTopic] = useState(initialValues);
 
     const changeHandler = (e) => {
@@ -25,12 +27,29 @@ export default function TopicEdit() {
 
     useEffect(() => {
         topicApi.getOne(topicId)
-            .then(data => setTopic(data ?? initialValues))
+            .then(data => {
+                if (!data) {
+                    navigate('/catalog');
+                    return;
+                }
+
+                if (data.author_id && data.author_id !== getAuthorId(user)) {
+                    navigate(`/topic-details/${topicId}`);
+                    return;
+                }
+
+                setTopic(data);
+            })
             .catch(error => alert(error.message));
-    }, [topicId]);
+    }, [topicId, user, navigate]);
 
     const editAction = async () => {
-        const result = await topicApi.edit(topicId, topic);
+        if (topic.author_id && topic.author_id !== getAuthorId(user)) {
+            navigate(`/topic-details/${topicId}`);
+            return;
+        }
+
+        await topicApi.edit(topicId, topic);
         navigate(`/topic-details/${topicId}`);
     }
 

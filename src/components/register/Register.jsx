@@ -1,11 +1,12 @@
-import { Link } from 'react-router';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useAuthContext } from '../../contexts/authContext';
 
-export default function Register({
-    onRegister,
-}) {
-    
+export default function Register() {
     const navigate = useNavigate();
+    const { register } = useAuthContext();
+    const [error, setError] = useState('');
+    const [mismatch, setMismatch] = useState(false);
 
     const registerAction = async (formData) => {
         const username = formData.get('username');
@@ -13,23 +14,24 @@ export default function Register({
         const password = formData.get('password');
         const repeatPassword = formData.get('repeatPassword');
 
+        setError('');
+        setMismatch(false);
+
         if (password !== repeatPassword) {
-            alert('Passwords do not match.');
+            setMismatch(true);
             return;
         }
 
         if (!email || !password || !repeatPassword || !username) {
-            alert('All fields are required.');
+            setError('All fields are required.');
             return;
         }
 
         try {
-            const registered = await onRegister({ username, email, password });
-            if (registered) {
-                navigate('/');
-            }
-        } catch (error) {
-            alert(error.message);
+            await register({ username, email, password });
+            navigate('/');
+        } catch (err) {
+            setError(err.message);
         }
     };
 
@@ -38,6 +40,11 @@ export default function Register({
             <section className="page" id="register-page">
                 <h1>Create your account</h1>
                 <form className="form-card" action={registerAction} noValidate>
+                    {error && (
+                        <div className="alert-error" role="alert">
+                            {error}
+                        </div>
+                    )}
                     <div className="field">
                         <label htmlFor="r-name">Username</label>
                         <input id="r-name" type="text" name="username" autoComplete="username" />
@@ -50,10 +57,10 @@ export default function Register({
                         <label htmlFor="r-pass">Password</label>
                         <input id="r-pass" type="password" name="password" autoComplete="new-password" />
                     </div>
-                    <div className="field invalid">
+                    <div className={`field${mismatch ? ' invalid' : ''}`}>
                         <label htmlFor="r-repeat">Repeat password</label>
                         <input id="r-repeat" type="password" name="repeatPassword" autoComplete="new-password" />
-                        <p className="error-text">Passwords do not match.</p>
+                        {mismatch && <p className="error-text">Passwords do not match.</p>}
                     </div>
                     <button className="btn btn-primary" type="submit">
                         Create account

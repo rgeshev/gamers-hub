@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { topicApi } from '../../api';
-import { resolveAuthorId } from '../../utils/request';
+import { getAuthorId, useAuthContext } from '../../contexts/authContext';
 
 const initialValues = {
     title: '',
@@ -12,8 +12,9 @@ const initialValues = {
     content: '',
 }
 
-export default function TopicCreate({ user }) {
+export default function TopicCreate() {
     const navigate = useNavigate();
+    const { user } = useAuthContext();
     const [values, setValues] = useState(initialValues);
 
     const changeHandler = (e) => {
@@ -31,7 +32,12 @@ export default function TopicCreate({ user }) {
         }
 
         try {
-            const authorId = await resolveAuthorId(user);
+            const authorId = getAuthorId(user);
+            if (!authorId) {
+                alert('Please log in to create a topic.');
+                navigate('/login');
+                return;
+            }
 
             const payload = {
                 title: values.title,

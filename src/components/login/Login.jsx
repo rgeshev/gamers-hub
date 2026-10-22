@@ -1,27 +1,25 @@
-import { Link } from 'react-router';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useAuthContext } from '../../contexts/authContext';
 
-export default function Login({
-    onLogin,
-}) {
-
+export default function Login() {
     const navigate = useNavigate();
+    const { login } = useAuthContext();
+    const [error, setError] = useState('');
 
     const submitAction = async (formData) => {
         const { email, password } = Object.fromEntries(formData);
 
         if (!email || !password) {
-            alert('Email and password are required');
+            setError('Email and password are required');
             return;
         }
 
         try {
-            const loggedIn = await onLogin({ email, password });
-            if (loggedIn) {
-                navigate('/');
-            }
-        } catch (error) {
-            alert(error.message);
+            await login({ email, password });
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Wrong email or password. Please try again.');
         }
     };
 
@@ -30,10 +28,11 @@ export default function Login({
             <section className="page" id="login-page">
                 <h1>Log in</h1>
                 <form className="form-card" action={submitAction} noValidate>
-                    {/* API error example */}
-                    <div className="alert-error" role="alert">
-                        Wrong email or password. Please try again.
-                    </div>
+                    {error && (
+                        <div className="alert-error" role="alert">
+                            {error}
+                        </div>
+                    )}
                     <div className="field">
                         <label htmlFor="l-email">Email</label>
                         <input id="l-email" type="email" name="email" autoComplete="email" />

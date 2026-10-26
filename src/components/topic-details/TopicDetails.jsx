@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { topicApi } from '../../api';
 import { formatDate } from '../../utils/formatDate';
+import { platformClass } from '../../utils/platformClass';
 import CreateComment from '../create-comment/CreateComment';
 import CommentsList from '../comments-list/CommentsList';
 import { getAuthorId, useAuthContext } from '../../contexts/authContext';
@@ -77,10 +78,10 @@ export default function TopicDetails() {
 
                 {!isLoading && !error && (
                     <>
-                        <article className="details topic-card pc" style={{ borderLeftWidth: 6 }}>
+                        <article className={`details topic-card ${platformClass(game.platform)}`} style={{ borderLeftWidth: 6 }}>
                             <div className="tags">
-                                <span className="tag platform">{game.platform || 'PC'}</span>
-                                <span className="tag">{game.category || 'General'}</span>
+                                {game.platform && <span className="tag platform">{game.platform}</span>}
+                                {game.category && <span className="tag">{game.category}</span>}
                             </div>
                             <h1>{game.title}</h1>
                             <p className="muted">{game.game_title || game.game} · posted by {game.author} on {formatDate(game.created_at)}</p>

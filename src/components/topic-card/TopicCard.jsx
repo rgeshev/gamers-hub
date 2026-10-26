@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { platformClass } from '../../utils/platformClass';
 
 export default function TopicCard({ 
     id,
@@ -10,7 +11,7 @@ export default function TopicCard({
     comments,
 }) {
         return (
-        <Link to={`/topic-details/${id}`} className={`topic-card ${platform}`}>
+        <Link to={`/topic-details/${id}`} className={`topic-card ${platformClass(platform)}`}>
             <div className="tags">
                 <span className="tag platform">{platform}</span>
                 <span className="tag">{category}</span>

@@ -8,7 +8,6 @@ export default function TopicCard({
     content,
     author,
     comments,
-    likes,
 }) {
         return (
         <Link to={`/topic-details/${id}`} className={`topic-card ${platform}`}>
@@ -22,7 +21,6 @@ export default function TopicCard({
             <div className="meta">
                 <span>by {author}</span>
                 <span>{comments} comments</span>
-                <span>{likes} likes</span>
             </div>
         </Link>
     )

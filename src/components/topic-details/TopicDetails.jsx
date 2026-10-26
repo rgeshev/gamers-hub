@@ -94,26 +94,19 @@ export default function TopicDetails() {
                                 </div>
                             )}
 
-                            <div className="details-actions">
-                                {isAuthenticated && (
-                                    <button className="btn like-btn" aria-pressed="false">
-                                        ♥ Like <span>{game.likes}</span>
+                            {isOwner && (
+                                <div className="details-actions">
+                                    <Link className="btn" to={`/edit/${topicId}`}>Edit</Link>
+                                    <button
+                                        className="btn btn-danger"
+                                        type="button"
+                                        onClick={deleteGameHandler}
+                                        disabled={isDeleting}
+                                    >
+                                        {isDeleting ? 'Deleting...' : 'Delete'}
                                     </button>
-                                )}
-                                {isOwner && (
-                                    <>
-                                        <Link className="btn" to={`/edit/${topicId}`}>Edit</Link>
-                                        <button
-                                            className="btn btn-danger"
-                                            type="button"
-                                            onClick={deleteGameHandler}
-                                            disabled={isDeleting}
-                                        >
-                                            {isDeleting ? 'Deleting...' : 'Delete'}
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </article>
 
                         <div className="comments">
@@ -123,7 +116,7 @@ export default function TopicDetails() {
                                 ? <CreateComment topicId={topicId} onCreated={() => setCommentsVersion(version => version + 1)} />
                                 : (
                                     <p className="guest-note" style={{ marginTop: '1rem' }}>
-                                        <Link to="/login">Log in</Link> to comment or like this topic.
+                                        <Link to="/login">Log in</Link> to comment on this topic.
                                     </p>
                                 )
                             }

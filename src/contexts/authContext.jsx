@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
 import { authApi, profileApi } from '../api';
+import usePersistedState from '../hooks/usePersistedState';
 
 export const AuthContext = createContext();
 
@@ -32,20 +33,14 @@ export function getAuthorId(account) {
 }
 
 export function AuthContextProvider({ children }) {
-    const [user, setUser] = useState(() => {
-        const stored = loadUser();
-        return stored?.accessToken ? stored : null;
-    });
+    const [user, setUser] = usePersistedState('user', null);
 
     const saveUser = useCallback((nextUser) => {
         setUser(nextUser);
-        if (nextUser) {
-            localStorage.setItem('user', JSON.stringify(nextUser));
-        } else {
-            localStorage.removeItem('user');
+        if (!nextUser) {
             localStorage.removeItem('users');
         }
-    }, []);
+    }, [setUser]);
 
     const completeSession = useCallback(async (session, username) => {
         if (!session?.access_token) {

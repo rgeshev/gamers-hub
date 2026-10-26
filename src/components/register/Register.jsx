@@ -1,37 +1,56 @@
 import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useAuthContext } from '../../contexts/authContext';
+import { validateRegister } from '../../utils/validation';
+import FormField from '../form-field/FormField';
+
+const initialValues = {
+    username: '',
+    email: '',
+    password: '',
+    repeatPassword: '',
+};
 
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuthContext();
-    const [error, setError] = useState('');
-    const [mismatch, setMismatch] = useState(false);
+    const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState({});
+    const [formError, setFormError] = useState('');
+    const [isPending, setIsPending] = useState(false);
 
-    const registerAction = async (formData) => {
-        const username = formData.get('username');
-        const email = formData.get('email');
-        const password = formData.get('password');
-        const repeatPassword = formData.get('repeatPassword');
+    const changeHandler = (e) => {
+        const { name, value } = e.target;
+        setValues((state) => ({ ...state, [name]: value }));
+        if (errors[name]) {
+            setErrors((state) => ({ ...state, [name]: '' }));
+        }
+    };
 
-        setError('');
-        setMismatch(false);
+    const registerAction = async (e) => {
+        e.preventDefault();
 
-        if (password !== repeatPassword) {
-            setMismatch(true);
+        const nextErrors = validateRegister(values);
+        setErrors(nextErrors);
+        setFormError('');
+
+        if (Object.keys(nextErrors).length > 0) {
             return;
         }
 
-        if (!email || !password || !repeatPassword || !username) {
-            setError('All fields are required.');
-            return;
-        }
+        setIsPending(true);
 
         try {
-            await register({ username, email, password });
+            await register({
+                username: values.username.trim(),
+                email: values.email.trim(),
+                password: values.password,
+            });
             navigate('/');
         } catch (err) {
-            setError(err.message);
+            setFormError(err.message || 'Could not create your account.');
+        } finally {
+            setIsPending(false);
         }
     };
 
@@ -39,31 +58,54 @@ export default function Register() {
         <main className="container">
             <section className="page" id="register-page">
                 <h1>Create your account</h1>
-                <form className="form-card" action={registerAction} noValidate>
-                    {error && (
+                <form className="form-card" onSubmit={registerAction} noValidate>
+                    {formError && (
                         <div className="alert-error" role="alert">
-                            {error}
+                            {formError}
                         </div>
                     )}
-                    <div className="field">
-                        <label htmlFor="r-name">Username</label>
-                        <input id="r-name" type="text" name="username" autoComplete="username" />
-                    </div>
-                    <div className="field">
-                        <label htmlFor="r-email">Email</label>
-                        <input id="r-email" type="email" name="email" autoComplete="email" />
-                    </div>
-                    <div className="field">
-                        <label htmlFor="r-pass">Password</label>
-                        <input id="r-pass" type="password" name="password" autoComplete="new-password" />
-                    </div>
-                    <div className={`field${mismatch ? ' invalid' : ''}`}>
-                        <label htmlFor="r-repeat">Repeat password</label>
-                        <input id="r-repeat" type="password" name="repeatPassword" autoComplete="new-password" />
-                        {mismatch && <p className="error-text">Passwords do not match.</p>}
-                    </div>
-                    <button className="btn btn-primary" type="submit">
-                        Create account
+                    <FormField id="r-name" label="Username" error={errors.username}>
+                        <input
+                            id="r-name"
+                            type="text"
+                            name="username"
+                            value={values.username}
+                            onChange={changeHandler}
+                            autoComplete="username"
+                        />
+                    </FormField>
+                    <FormField id="r-email" label="Email" error={errors.email}>
+                        <input
+                            id="r-email"
+                            type="email"
+                            name="email"
+                            value={values.email}
+                            onChange={changeHandler}
+                            autoComplete="email"
+                        />
+                    </FormField>
+                    <FormField id="r-pass" label="Password" error={errors.password}>
+                        <input
+                            id="r-pass"
+                            type="password"
+                            name="password"
+                            value={values.password}
+                            onChange={changeHandler}
+                            autoComplete="new-password"
+                        />
+                    </FormField>
+                    <FormField id="r-repeat" label="Repeat password" error={errors.repeatPassword}>
+                        <input
+                            id="r-repeat"
+                            type="password"
+                            name="repeatPassword"
+                            value={values.repeatPassword}
+                            onChange={changeHandler}
+                            autoComplete="new-password"
+                        />
+                    </FormField>
+                    <button className="btn btn-primary" type="submit" disabled={isPending}>
+                        {isPending ? 'Creating account...' : 'Create account'}
                     </button>
                     <p className="form-note">
                         Already a member? <Link to="/login">Log in</Link>

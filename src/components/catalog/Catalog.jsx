@@ -5,11 +5,17 @@ import TopicCard from "../topic-card/TopicCard";
 
 export default function Catalog() {
     const [topics, setTopics] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
+        setIsLoading(true);
+        setError('');
+
         topicApi.getAll()
             .then(setTopics)
-            .catch(err => alert(err))
+            .catch((err) => setError(err.message || 'Could not load topics.'))
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -27,7 +33,6 @@ export default function Catalog() {
                     </Link>
                 </div>
 
-                {/* component: TopicFilters (controlled inputs) */}
                 <div className="filters">
                     <div className="search">
                         <label htmlFor="q">Search by game</label>
@@ -64,19 +69,29 @@ export default function Catalog() {
                     </div>
                 </div>
 
-                {/* component: TopicList -> TopicCard (repeat per topic) */}
-                {topics.length > 0
-                    ? (
-                        <div className="topic-list">
-                            {topics.map(topic => <TopicCard key={topic.id} {...topic} />)}
-                        </div>
-                    )
-                    : (
-                        <div className="state" style={{ marginTop: '1.5rem' }}>
-                            No topics match your filters. Try a different game or clear the filters.
-                        </div>
-                    )
-                }
+                {isLoading && (
+                    <div className="state" style={{ marginTop: '1.5rem' }}>
+                        Loading topics...
+                    </div>
+                )}
+
+                {error && (
+                    <div className="alert-error" role="alert" style={{ marginTop: '1.5rem' }}>
+                        {error}
+                    </div>
+                )}
+
+                {!isLoading && !error && topics.length > 0 && (
+                    <div className="topic-list">
+                        {topics.map(topic => <TopicCard key={topic.id} {...topic} />)}
+                    </div>
+                )}
+
+                {!isLoading && !error && topics.length === 0 && (
+                    <div className="state" style={{ marginTop: '1.5rem' }}>
+                        No topics match your filters. Try a different game or clear the filters.
+                    </div>
+                )}
             </section>
         </main>
     );

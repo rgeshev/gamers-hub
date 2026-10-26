@@ -2,6 +2,8 @@ import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { topicApi } from '../../api';
 import { getAuthorId, useAuthContext } from '../../contexts/authContext';
+import { validateTopic } from '../../utils/validation';
+import FormField from '../form-field/FormField';
 
 const initialValues = {
     title: '',
@@ -10,62 +12,80 @@ const initialValues = {
     category: '',
     image: '',
     content: '',
-}
+};
 
 export default function TopicCreate() {
     const navigate = useNavigate();
     const { user } = useAuthContext();
     const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState({});
+    const [formError, setFormError] = useState('');
+    const [isPending, setIsPending] = useState(false);
 
     const changeHandler = (e) => {
-        setValues(state => ({
+        const { name, value } = e.target;
+        setValues((state) => ({
             ...state,
-            [e.target.name]: e.target.value,
-        }))
-    }
+            [name]: value,
+        }));
+        if (errors[name]) {
+            setErrors((state) => ({ ...state, [name]: '' }));
+        }
+    };
 
-    const submitAction = async () => {
-        if (!user?.id) {
-            alert('Please log in to create a topic.');
+    const submitAction = async (e) => {
+        e.preventDefault();
+
+        const authorId = getAuthorId(user);
+        if (!authorId) {
             navigate('/login');
             return;
         }
 
-        try {
-            const authorId = getAuthorId(user);
-            if (!authorId) {
-                alert('Please log in to create a topic.');
-                navigate('/login');
-                return;
-            }
+        const nextErrors = validateTopic(values);
+        setErrors(nextErrors);
+        setFormError('');
 
+        if (Object.keys(nextErrors).length > 0) {
+            return;
+        }
+
+        setIsPending(true);
+
+        try {
             const payload = {
-                title: values.title,
-                game_title: values.game,
+                title: values.title.trim(),
+                game_title: values.game.trim(),
                 platform: values.platform,
                 category: values.category,
-                content: values.content,
+                content: values.content.trim(),
                 author_id: authorId,
             };
 
-            if (values.image) {
-                payload.image_url = values.image;
+            if (values.image.trim()) {
+                payload.image_url = values.image.trim();
             }
 
             await topicApi.create(payload);
-            navigate("/catalog");
+            navigate('/catalog');
         } catch (error) {
-            alert(error.message);
+            setFormError(error.message || 'Could not publish the topic.');
+        } finally {
+            setIsPending(false);
         }
-    }
+    };
 
     return (
         <main className="container">
             <section className="page" id="add-page">
                 <h1>Start a topic</h1>
-                <form className="form-card" action={submitAction} noValidate>
-                    <div className="field invalid">
-                        <label htmlFor="title">Title</label>
+                <form className="form-card" onSubmit={submitAction} noValidate>
+                    {formError && (
+                        <div className="alert-error" role="alert">
+                            {formError}
+                        </div>
+                    )}
+                    <FormField id="title" label="Title" error={errors.title}>
                         <input
                             id="title"
                             type="text"
@@ -74,19 +94,21 @@ export default function TopicCreate() {
                             onChange={changeHandler}
                             aria-describedby="title-err"
                         />
-                        <p className="error-text" id="title-err">
-                            Title must be between 5 and 100 characters.
-                        </p>
-                    </div>
+                    </FormField>
 
-                    <div className="field">
-                        <label htmlFor="game">Game</label>
-                        <input id="game" name="game" type="text" placeholder="e.g. Elden Ring" value={values.game} onChange={changeHandler} />
-                    </div>
+                    <FormField id="game" label="Game" error={errors.game}>
+                        <input
+                            id="game"
+                            name="game"
+                            type="text"
+                            placeholder="e.g. Elden Ring"
+                            value={values.game}
+                            onChange={changeHandler}
+                        />
+                    </FormField>
 
                     <div className="form-row">
-                        <div className="field">
-                            <label htmlFor="platform">Platform</label>
+                        <FormField id="platform" label="Platform" error={errors.platform}>
                             <select id="platform" name="platform" value={values.platform} onChange={changeHandler}>
                                 <option value="">Select platform</option>
                                 <option>PC</option>
@@ -95,9 +117,8 @@ export default function TopicCreate() {
                                 <option>Switch</option>
                                 <option>Mobile</option>
                             </select>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="category">Category</label>
+                        </FormField>
+                        <FormField id="category" label="Category" error={errors.category}>
                             <select id="category" name="category" value={values.category} onChange={changeHandler}>
                                 <option value="">Select category</option>
                                 <option>Help & Tips</option>
@@ -106,21 +127,32 @@ export default function TopicCreate() {
                                 <option>Reviews</option>
                                 <option>General</option>
                             </select>
-                        </div>
+                        </FormField>
                     </div>
 
-                    <div className="field">
-                        <label htmlFor="image">Image URL (optional)</label>
-                        <input id="image" name="image" type="url" placeholder="https://..." value={values.image} onChange={changeHandler} />
-                    </div>
+                    <FormField id="image" label="Image URL (optional)" error={errors.image}>
+                        <input
+                            id="image"
+                            name="image"
+                            type="url"
+                            placeholder="https://..."
+                            value={values.image}
+                            onChange={changeHandler}
+                        />
+                    </FormField>
 
-                    <div className="field">
-                        <label htmlFor="content">Content</label>
-                        <textarea id="content" name="content" placeholder="At least 20 characters" value={values.content} onChange={changeHandler} />
-                    </div>
+                    <FormField id="content" label="Content" error={errors.content}>
+                        <textarea
+                            id="content"
+                            name="content"
+                            placeholder="At least 20 characters"
+                            value={values.content}
+                            onChange={changeHandler}
+                        />
+                    </FormField>
 
-                    <button className="btn btn-primary" type="submit">
-                        Publish topic
+                    <button className="btn btn-primary" type="submit" disabled={isPending}>
+                        {isPending ? 'Publishing...' : 'Publish topic'}
                     </button>
                     <Link className="btn" to="/catalog">
                         Cancel

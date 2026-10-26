@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useParams } from 'react-router';
 import { commentApi } from '../../api';
 import CommentItem from './comment-item/CommentItem';
+import { commentReducer } from './comment-item/comment-reducer';
 
 export default function CommentsList({
     topicId: topicIdProp,
@@ -9,7 +10,7 @@ export default function CommentsList({
 }) {
     const { topicId: topicIdParam } = useParams();
     const topicId = topicIdProp || topicIdParam;
-    const [comments, setComments] = useState([]);
+    const [comments, dispatch] = useReducer(commentReducer, []);
 
     useEffect(() => {
         if (!topicId || topicId === 'undefined') {
@@ -17,7 +18,7 @@ export default function CommentsList({
         }
 
         commentApi.getAll(topicId)
-            .then(setComments)
+            .then(result => dispatch({ type: 'SET_COMMENTS', payload: result }))
             .catch(error => alert(error.message));
     }, [topicId, refresh]);
 

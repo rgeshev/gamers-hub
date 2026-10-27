@@ -2,7 +2,7 @@
 
 A React SPA where players start discussion topics about games, read replies, and comment. Data and auth live on **Supabase** (Option A: BaaS). The frontend is a Vite production build; reviewers should use the live URL below, not localhost.
 
-**Live app:** _add your Vercel / Netlify URL here_
+**Live app:** https://gamers-hub.roskata-geshev19.workers.dev/
 
 **Backend:** hosted Supabase project (`rest/v1` + `auth/v1`). Nothing else to deploy. Data persists between visits.
 
